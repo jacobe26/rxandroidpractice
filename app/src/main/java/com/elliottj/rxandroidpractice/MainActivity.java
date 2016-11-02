@@ -4,9 +4,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.List;
+
 import rx.Observable;
 import rx.Observer;
-import rx.Subscription;
+import rx.functions.Func1;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +43,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        integerObservable.subscribe(integerObserver);
+        integerObservable
+                .map(new Func1<Integer, String>() {
+                    @Override
+                    public String call(Integer integer) {
+                        return Integer.toBinaryString(integer);
+                    }
+                })
+                .filter(new Func1<String, Boolean>() {
+                    @Override
+                    public Boolean call(String s) {
+                        return s.endsWith("1");
+                    }
+                })
+                .map(new Func1<String, Integer>() {
+                    @Override
+                    public Integer call(String s) {
+                        return Integer.parseInt(s, 2);
+                    }
+                })
+                .subscribe(integerObserver);
     }
 }
